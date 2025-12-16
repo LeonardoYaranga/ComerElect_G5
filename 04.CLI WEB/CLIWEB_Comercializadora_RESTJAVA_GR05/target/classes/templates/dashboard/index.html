@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Comercializadora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header>
+        <nav class="navbar shadow-lg z-[100]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <a th:href="@{/dashboard}" class="text-white font-bold text-xl">
+                                <i class="fas fa-store"></i> Comercializadora
+                            </a>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a th:href="@{/dashboard}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                            <!-- Menú para ADMIN -->
+                            <span th:if="${rol == 'ADMIN'}">
+                                <a th:href="@{/facturas/crear}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                    <i class="fas fa-plus-circle"></i> Crear Factura
+                                </a>
+                                <a th:href="@{/facturas/consultar}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                    <i class="fas fa-file-invoice"></i> Consultar Facturas
+                                </a>
+                                <a th:href="@{/electrodomesticos}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                    <i class="fas fa-box"></i> Electrodomésticos
+                                </a>
+                            </span>
+                            <!-- Menú para CLIENTE -->
+                            <span th:if="${rol == 'CLIENTE'}">
+                                <a th:href="@{/productos}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                    <i class="fas fa-shopping-bag"></i> Productos
+                                </a>
+                                <a th:href="@{/carrito}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                    <i class="fas fa-shopping-cart"></i> Mi Carrito
+                                </a>
+                                <a th:href="@{/facturas/consultar}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                    <i class="fas fa-file-invoice"></i> Mis Facturas
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+                        <span class="text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-user"></i> <span th:text="${session.usuario != null ? session.usuario : 'Usuario'}"></span>
+                        </span>
+                        <a th:href="@{/logout}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </a>
+                    </div>
+                    <div class="flex items-center sm:hidden">
+                        <button type="button" class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-yellow-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only">Open main menu</span>
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sm:hidden" id="mobile-menu">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a th:href="@{/dashboard}" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <!-- Menú móvil para ADMIN -->
+                    <span th:if="${rol == 'ADMIN'}">
+                        <a th:href="@{/facturas/crear}" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium">
+                            <i class="fas fa-plus-circle"></i> Crear Factura
+                        </a>
+                        <a th:href="@{/facturas/consultar}" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium">
+                            <i class="fas fa-file-invoice"></i> Consultar Facturas
+                        </a>
+                        <a th:href="@{/electrodomesticos}" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium">
+                            <i class="fas fa-box"></i> Electrodomésticos
+                        </a>
+                    </span>
+                    <!-- Menú móvil para CLIENTE -->
+                    <span th:if="${rol == 'CLIENTE'}">
+                        <a th:href="@{/productos}" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium">
+                            <i class="fas fa-shopping-bag"></i> Productos
+                        </a>
+                        <a th:href="@{/carrito}" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium">
+                            <i class="fas fa-shopping-cart"></i> Mi Carrito
+                        </a>
+                        <a th:href="@{/facturas/consultar}" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium">
+                            <i class="fas fa-file-invoice"></i> Mis Facturas
+                        </a>
+                    </span>
+                    <div class="border-t border-gray-600 pt-2">
+                        <span class="text-white block px-3 py-2 rounded-md text-base font-medium">
+                            <i class="fas fa-user"></i> <span th:text="${session.usuario != null ? session.usuario : 'Usuario'}"></span>
+                        </span>
+                        <a th:href="@{/logout}" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-1">
+        <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2"><i class="fas fa-home text-blue-600"></i> Dashboard</h2>
+            <p class="text-gray-600" th:text="'Bienvenido, ' + ${dashboardViewModel.nombreUsuario}"></p>
+            <p class="text-sm text-gray-500 mt-1" th:text="'Rol: ' + ${rol}"></p>
+        </div>
+
+        <div th:if="${error != null}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 relative" role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline" th:text="${error}"></span>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Métricas (solo para ADMIN) -->
+        <div th:if="${rol == 'ADMIN'}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-blue-600 text-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h5 class="text-lg font-semibold mb-2"><i class="fas fa-chart-bar"></i> Facturas Hoy</h5>
+                        <h2 class="text-4xl font-bold" th:text="${dashboardViewModel.totalFacturasHoy}"></h2>
+                    </div>
+                    <i class="fas fa-chart-bar text-4xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-green-600 text-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h5 class="text-lg font-semibold mb-2"><i class="fas fa-money-bill-wave"></i> Efectivo Hoy</h5>
+                        <h2 class="text-4xl font-bold" th:text="'$' + ${#numbers.formatDecimal(dashboardViewModel.totalVendidoEfectivo, 1, 2)}"></h2>
+                    </div>
+                    <i class="fas fa-money-bill-wave text-4xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-blue-500 text-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h5 class="text-lg font-semibold mb-2"><i class="fas fa-credit-card"></i> Crédito Hoy</h5>
+                        <h2 class="text-4xl font-bold" th:text="'$' + ${#numbers.formatDecimal(dashboardViewModel.totalVendidoCredito, 1, 2)}"></h2>
+                    </div>
+                    <i class="fas fa-credit-card text-4xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-yellow-500 text-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h5 class="text-lg font-semibold mb-2"><i class="fas fa-dollar-sign"></i> Total Hoy</h5>
+                        <h2 class="text-4xl font-bold" th:text="'$' + ${#numbers.formatDecimal(dashboardViewModel.totalVendidoEfectivo + dashboardViewModel.totalVendidoCredito, 1, 2)}"></h2>
+                    </div>
+                    <i class="fas fa-dollar-sign text-4xl opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accesos Rápidos (ADMIN) -->
+        <div th:if="${rol == 'ADMIN'}" class="mb-8">
+            <h4 class="text-2xl font-bold text-gray-800 mb-6"><i class="fas fa-rocket text-purple-600"></i> Accesos Rápidos</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a th:href="@{/facturas/crear}" class="block">
+                    <div class="bg-white border-2 border-blue-500 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h1 class="text-6xl text-blue-500 mb-4"><i class="fas fa-plus-circle"></i></h1>
+                        <h5 class="text-xl font-semibold text-gray-800 mb-2">Crear Nueva Factura</h5>
+                        <p class="text-gray-600">Generar una venta</p>
+                    </div>
+                </a>
+                <a th:href="@{/electrodomesticos}" class="block">
+                    <div class="bg-white border-2 border-green-500 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h1 class="text-6xl text-green-500 mb-4"><i class="fas fa-box"></i></h1>
+                        <h5 class="text-xl font-semibold text-gray-800 mb-2">Ver Electrodomésticos</h5>
+                        <p class="text-gray-600">Catálogo de productos</p>
+                    </div>
+                </a>
+                <a th:href="@{/facturas/consultar}" class="block">
+                    <div class="bg-white border-2 border-blue-400 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h1 class="text-6xl text-blue-400 mb-4"><i class="fas fa-file-invoice"></i></h1>
+                        <h5 class="text-xl font-semibold text-gray-800 mb-2">Consultar Facturas</h5>
+                        <p class="text-gray-600">Histórico de ventas</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Accesos Rápidos (CLIENTE) -->
+        <div th:if="${rol == 'CLIENTE'}" class="mb-8">
+            <h4 class="text-2xl font-bold text-gray-800 mb-6"><i class="fas fa-rocket text-purple-600"></i> Accesos Rápidos</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a th:href="@{/productos}" class="block">
+                    <div class="bg-white border-2 border-blue-500 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h1 class="text-6xl text-blue-500 mb-4"><i class="fas fa-shopping-bag"></i></h1>
+                        <h5 class="text-xl font-semibold text-gray-800 mb-2">Ver Catálogo</h5>
+                        <p class="text-gray-600">Explorar productos</p>
+                    </div>
+                </a>
+                <a th:href="@{/carrito}" class="block">
+                    <div class="bg-white border-2 border-green-500 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h1 class="text-6xl text-green-500 mb-4"><i class="fas fa-shopping-cart"></i></h1>
+                        <h5 class="text-xl font-semibold text-gray-800 mb-2">Mi Carrito</h5>
+                        <p class="text-gray-600">Ver y confirmar compra</p>
+                    </div>
+                </a>
+                <a th:href="@{/facturas/consultar}" class="block">
+                    <div class="bg-white border-2 border-blue-400 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h1 class="text-6xl text-blue-400 mb-4"><i class="fas fa-file-invoice"></i></h1>
+                        <h5 class="text-xl font-semibold text-gray-800 mb-2">Mis Facturas</h5>
+                        <p class="text-gray-600">Histórico de compras</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Productos Más Vendidos (solo ADMIN) -->
+        <div th:if="${rol == 'ADMIN'}" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="bg-gray-800 text-white px-6 py-4 rounded-t-lg">
+                    <h5 class="text-xl font-semibold mb-0"><i class="fas fa-trophy"></i> Electrodomésticos Más Vendidos</h5>
+                </div>
+                <div class="p-6">
+                    <div th:if="${dashboardViewModel.productosMasVendidos != null and !dashboardViewModel.productosMasVendidos.isEmpty()}">
+                        <ul class="space-y-3">
+                            <li th:each="producto : ${dashboardViewModel.productosMasVendidos}" class="flex justify-between items-center bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors duration-200">
+                                <span class="font-medium text-gray-800" th:text="${producto.nombre}"></span>
+                                <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold" th:text="${producto.cantidad}"></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div th:if="${dashboardViewModel.productosMasVendidos == null or dashboardViewModel.productosMasVendidos.isEmpty()}" class="text-center py-8">
+                        <i class="fas fa-chart-line text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 text-lg">No hay datos disponibles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bienvenida CLIENTE -->
+        <div th:if="${rol == 'CLIENTE'}" class="bg-white rounded-lg shadow-lg p-8 text-center">
+            <i class="fas fa-smile text-6xl text-blue-500 mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">¡Bienvenido a nuestro catálogo!</h3>
+            <p class="text-gray-600 mb-6">Explora nuestros productos y realiza tus compras de forma fácil y rápida</p>
+            <a th:href="@{/productos}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg">
+                <i class="fas fa-shopping-bag"></i> Ir al Catálogo
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.querySelector('button[aria-controls="mobile-menu"]');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+            mobileMenuButton.setAttribute('aria-expanded', !expanded);
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

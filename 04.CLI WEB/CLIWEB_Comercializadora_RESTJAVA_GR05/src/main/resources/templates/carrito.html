@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Carrito - Comercializadora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header>
+        <nav class="navbar shadow-lg z-[100]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <a href="/dashboard" class="text-white font-bold text-xl">
+                                <i class="fas fa-store"></i> Comercializadora
+                            </a>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="/dashboard" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                            <a href="/productos" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                <i class="fas fa-shopping-bag"></i> Productos
+                            </a>
+                            <a href="/carrito" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                <i class="fas fa-shopping-cart"></i> Mi Carrito
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+                        <span class="text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-user"></i> <span id="usuario-nombre" th:text="${session.usuario}">Usuario</span>
+                        </span>
+                        <a href="/logout" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-shopping-cart"></i> Mi Carrito
+            </h1>
+            <p class="text-gray-600">Revisa y gestiona los productos en tu carrito</p>
+        </div>
+
+        <div id="alertas"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Lista de productos en carrito -->
+            <div class="lg:col-span-2">
+                <div id="carrito-container" class="bg-white rounded-lg shadow-md p-6">
+                    <div id="carrito-vacio" class="text-center text-gray-600">
+                        <i class="fas fa-inbox text-4xl mb-4"></i>
+                        <p>Tu carrito está vacío</p>
+                        <a href="/productos" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded">
+                            Ir a productos
+                        </a>
+                    </div>
+                    <div id="carrito-items" style="display: none;">
+                        <table class="w-full">
+                            <thead class="border-b-2 border-gray-300">
+                                <tr>
+                                    <th class="text-left py-2">Producto</th>
+                                    <th class="text-center py-2">Precio</th>
+                                    <th class="text-center py-2">Cantidad</th>
+                                    <th class="text-right py-2">Subtotal</th>
+                                    <th class="text-center py-2">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="carrito-items-list">
+                                <!-- Los items se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen y confirmación -->
+            <div class="bg-white rounded-lg shadow-md p-6 h-fit">
+                <h2 class="text-2xl font-bold mb-4">Resumen</h2>
+                
+                <div class="mb-4 pb-4 border-b border-gray-300">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-600">Cantidad de artículos:</span>
+                        <span id="resumen-cantidad" class="font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-600">Subtotal:</span>
+                        <span id="resumen-subtotal" class="font-bold">$0.00</span>
+                    </div>
+                </div>
+
+                <div id="opciones-pago" style="display: none;">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">Número de cuotas:</label>
+                        <select id="numero-cuotas" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Selecciona --</option>
+                            <option value="3">3 cuotas</option>
+                            <option value="6">6 cuotas</option>
+                            <option value="12">12 cuotas</option>
+                            <option value="24">24 cuotas</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">Total:</label>
+                        <div class="text-3xl font-bold text-blue-600" id="resumen-total">$0.00</div>
+                    </div>
+
+                    <button onclick="confirmarCompra()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                        <i class="fas fa-check-circle"></i> Confirmar Compra
+                    </button>
+
+                    <a href="/productos" class="w-full mt-2 block text-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-4 rounded-lg transition duration-300">
+                        <i class="fas fa-arrow-left"></i> Seguir comprando
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de confirmación -->
+    <div id="modal-confirmacion" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center" style="display: none;">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 class="text-xl font-bold mb-4"><i class="fas fa-check-circle text-green-500"></i> ¡Compra Confirmada!</h3>
+            <div id="modal-contenido" class="mb-6 text-gray-700">
+                <!-- Contenido de la factura -->
+            </div>
+            <a href="/facturas/consultar" class="w-full block text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                Ver mis facturas
+            </a>
+            <button onclick="volverProductos()" class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                Volver a productos
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Obtener cédula del atributo data-cedula de Thymeleaf
+        const cedula = "[[ ${cedula} ]]";
+
+        if (!cedula || cedula.includes('[[')) {
+            window.location.href = '/login';
+        }
+
+        // Cargar carrito al iniciar
+        $(document).ready(function() {
+            cargarCarrito();
+        });
+
+        function cargarCarrito() {
+            $.ajax({
+                url: '/api/carrito?cedula=' + cedula,
+                type: 'GET',
+                success: function(data) {
+                    if (data.success) {
+                        mostrarCarrito(data.items || []);
+                    } else {
+                        mostrarAlerta('error', 'Error al cargar carrito');
+                    }
+                },
+                error: function(err) {
+                    mostrarAlerta('error', 'Error al conectar con el servidor');
+                }
+            });
+        }
+
+        function mostrarCarrito(items) {
+            const container = $('#carrito-container');
+            const itemsDiv = $('#carrito-items');
+            const vacioDiv = $('#carrito-vacio');
+            const itemsList = $('#carrito-items-list');
+            const opcionesPago = $('#opciones-pago');
+
+            if (items.length === 0) {
+                itemsDiv.hide();
+                vacioDiv.show();
+                opcionesPago.hide();
+                $('#resumen-cantidad').text('0');
+                $('#resumen-subtotal').text('$0.00');
+                $('#resumen-total').text('$0.00');
+                return;
+            }
+
+            itemsDiv.show();
+            vacioDiv.hide();
+            opcionesPago.show();
+
+            itemsList.empty();
+            let total = 0;
+
+            items.forEach(item => {
+                const subtotal = parseFloat(item.precioUnitario) * item.cantidad;
+                total += subtotal;
+
+                const fila = `
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-3">${item.nombre}</td>
+                        <td class="text-center">$${parseFloat(item.precioUnitario).toFixed(2)}</td>
+                        <td class="text-center">${item.cantidad}</td>
+                        <td class="text-right">$${subtotal.toFixed(2)}</td>
+                        <td class="text-center">
+                            <button onclick="removerProducto('${item.codigo}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                itemsList.append(fila);
+            });
+
+            $('#resumen-cantidad').text(items.length);
+            $('#resumen-subtotal').text('$' + total.toFixed(2));
+            $('#resumen-total').text('$' + total.toFixed(2));
+        }
+
+        function removerProducto(codigo) {
+            if (confirm('¿Estás seguro de que deseas remover este producto?')) {
+                $.ajax({
+                    url: '/api/carrito/remover/' + codigo + '?cedula=' + cedula,
+                    type: 'DELETE',
+                    success: function(data) {
+                        if (data.success) {
+                            mostrarAlerta('success', 'Producto removido del carrito');
+                            cargarCarrito();
+                        } else {
+                            mostrarAlerta('error', 'Error al remover producto');
+                        }
+                    },
+                    error: function(err) {
+                        mostrarAlerta('error', 'Error al conectar con el servidor');
+                    }
+                });
+            }
+        }
+
+        function confirmarCompra() {
+            const numeroCuotas = $('#numero-cuotas').val();
+
+            if (!numeroCuotas) {
+                mostrarAlerta('error', 'Debes seleccionar el número de cuotas');
+                return;
+            }
+
+            $.ajax({
+                url: '/api/carrito/confirmar?cedula=' + cedula + '&numeroCuotas=' + numeroCuotas,
+                type: 'POST',
+                dataType: 'json',
+                success: function(data) {
+                    if (data.success) {
+                        mostrarFactura(data.factura);
+                    } else {
+                        let mensajeError = extraerMensajeError(data.error);
+                        mostrarAlerta('error', mensajeError);
+                    }
+                },
+                error: function(err) {
+                    // Intentar extraer el mensaje de error de la respuesta JSON
+                    try {
+                        const responseJSON = err.responseJSON;
+                        if (responseJSON && responseJSON.error) {
+                            let mensajeError = extraerMensajeError(responseJSON.error);
+                            mostrarAlerta('error', mensajeError);
+                        } else {
+                            mostrarAlerta('error', 'Error al confirmar compra');
+                        }
+                    } catch (e) {
+                        mostrarAlerta('error', 'Error al conectar con el servidor');
+                    }
+                    console.error(err);
+                }
+            });
+        }
+
+        function extraerMensajeError(errorString) {
+            if (!errorString) return 'Error desconocido';
+            
+            // Intentar extraer mensaje de JSON anidado
+            try {
+                // Si el error contiene JSON anidado
+                if (errorString.includes('{')) {
+                    const jsonMatch = errorString.match(/\{.*\}/);
+                    if (jsonMatch) {
+                        const jsonError = JSON.parse(jsonMatch[0]);
+                        return jsonError.message || jsonError.error || errorString;
+                    }
+                }
+            } catch (e) {
+                // Si no es JSON anidado, devolver el string original
+            }
+            
+            // Si contiene "no es sujeto de crédito"
+            if (errorString.includes('no es sujeto de crédito')) {
+                return 'Lo sentimos, no eres sujeto de crédito. No podemos procesar tu compra en este momento.';
+            }
+            
+            // Si contiene otros mensajes específicos
+            if (errorString.includes('Cliente no es sujeto')) {
+                return 'Lo sentimos, no eres sujeto de crédito. No podemos procesar tu compra en este momento.';
+            }
+            
+            return errorString;
+        }
+
+        function mostrarFactura(factura) {
+            const modal = $('#modal-confirmacion');
+            const contenido = $('#modal-contenido');
+
+            let html = `
+                <div class="space-y-2">
+                    <p><strong>Número de Factura:</strong> ${factura.numFactura || 'N/A'}</p>
+                    <p><strong>Cliente:</strong> ${factura.cedula || 'N/A'}</p>
+                    <p><strong>Total:</strong> $${factura.total ? parseFloat(factura.total).toFixed(2) : '0.00'}</p>
+                    <p><strong>Tipo de Pago:</strong> Crédito</p>
+                    <p><strong>Cuotas:</strong> ${factura.numeroCuotas || 'N/A'}</p>
+                    <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-ES')}</p>
+                </div>
+            `;
+
+            contenido.html(html);
+            modal.show();
+        }
+
+        function volverProductos() {
+            $('#modal-confirmacion').hide();
+            window.location.href = '/productos';
+        }
+
+        function mostrarAlerta(tipo, mensaje) {
+            const alertasContainer = $('#alertas');
+            const clase = tipo === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+            const icono = tipo === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+            
+            const alerta = `
+                <div class="border ${clase} px-4 py-3 rounded-md mb-4 flex items-center">
+                    <span class="mr-3">${icono}</span>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            
+            alertasContainer.append(alerta);
+            
+            setTimeout(() => {
+                alertasContainer.find('.border:first').fadeOut(function() { $(this).remove(); });
+            }, 4000);
+        }
+
+        // Cerrar modal al hacer clic fuera
+        $(document).click(function(event) {
+            const modal = $('#modal-confirmacion');
+            if (event.target === modal[0]) {
+                modal.hide();
+            }
+        });
+    </script>
+</body>
+</html>

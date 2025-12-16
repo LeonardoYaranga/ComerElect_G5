@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catálogo de Productos - Comercializadora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .producto-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .producto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header>
+        <nav class="navbar shadow-lg z-[100]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <a href="/dashboard" class="text-white font-bold text-xl">
+                                <i class="fas fa-store"></i> Comercializadora
+                            </a>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="/dashboard" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                            <a href="/productos" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                <i class="fas fa-shopping-bag"></i> Productos
+                            </a>
+                            <a href="/carrito" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                                <i class="fas fa-shopping-cart"></i> Mi Carrito <span id="badge-carrito" class="ml-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold" style="display: none;"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+                        <span class="text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-user"></i> <span id="usuario-nombre" th:text="${session.usuario}">Usuario</span>
+                        </span>
+                        <a href="/logout" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-300">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-shopping-bag"></i> Catálogo de Productos
+            </h1>
+            <p class="text-gray-600">Selecciona los productos que deseas comprar</p>
+        </div>
+
+        <div id="alertas"></div>
+
+        <div id="productos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Los productos se cargarán aquí con AJAX -->
+        </div>
+    </main>
+
+    <!-- Modal para agregar al carrito -->
+    <div id="modal-carrito" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center" style="display: none;">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h3 class="text-xl font-bold mb-4" id="modal-titulo">Agregar al carrito</h3>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium mb-2">Cantidad:</label>
+                <input type="number" id="modal-cantidad" min="1" value="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="cerrarModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                    Cancelar
+                </button>
+                <button onclick="confirmarAgregar()" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Agregar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let productosGlobal = [];
+        let productoSeleccionado = null;
+        // Obtener cédula del atributo data-cedula de Thymeleaf
+        const cedula = "[[ ${cedula} ]]";
+
+        if (!cedula || cedula.includes('[[')) {
+            window.location.href = '/login';
+        }
+
+        // Guardar cédula en localStorage
+        if (cedula) {
+            localStorage.setItem('cedula-usuario', cedula);
+        }
+
+        // Cargar productos al iniciar
+        $(document).ready(function() {
+            cargarProductos();
+            actualizarBadgeCarrito();
+        });
+
+        function cargarProductos() {
+            $.ajax({
+                url: '/api/electrodomesticos',
+                type: 'GET',
+                success: function(data) {
+                    if (data.success) {
+                        productosGlobal = data.productos || [];
+                        mostrarProductos();
+                    } else {
+                        mostrarAlerta('error', 'Error al cargar productos');
+                    }
+                },
+                error: function(err) {
+                    mostrarAlerta('error', 'Error al conectar con el servidor');
+                }
+            });
+        }
+
+        function mostrarProductos() {
+            const container = $('#productos-container');
+            container.empty();
+
+            if (productosGlobal.length === 0) {
+                container.html('<div class="col-span-full text-center text-gray-600"><i class="fas fa-inbox"></i> No hay productos disponibles</div>');
+                return;
+            }
+
+            productosGlobal.forEach(producto => {
+                const card = `
+                    <div class="producto-card bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="bg-gray-200 h-48 flex items-center justify-center">
+                            ${producto.imageUrl ? 
+                                `<img src="${producto.imageUrl}" alt="${producto.nombre}" class="w-full h-full object-cover" />` :
+                                `<i class="fas fa-image text-gray-400 text-4xl"></i>`
+                            }
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">${producto.nombre}</h3>
+                            <p class="text-gray-600 text-sm mb-4">${producto.descripcion || 'Sin descripción'}</p>
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-2xl font-bold text-blue-600">$${parseFloat(producto.precio).toFixed(2)}</span>
+                                <span class="text-sm text-gray-500">Código: ${producto.codigo}</span>
+                            </div>
+                            <button onclick="abrirModal('${producto.codigo}', '${producto.nombre}', ${producto.precio})" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                                <i class="fas fa-cart-plus"></i> Agregar al carrito
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.append(card);
+            });
+        }
+
+        function abrirModal(codigo, nombre, precio) {
+            productoSeleccionado = { codigo, nombre, precio };
+            $('#modal-titulo').text(`Agregar "${nombre}" al carrito`);
+            $('#modal-cantidad').val(1);
+            $('#modal-carrito').show();
+        }
+
+        function cerrarModal() {
+            $('#modal-carrito').hide();
+            productoSeleccionado = null;
+        }
+
+        function confirmarAgregar() {
+            if (!productoSeleccionado) return;
+
+            const cantidad = parseInt($('#modal-cantidad').val()) || 1;
+            const cedulaUsuario = localStorage.getItem('cedula-usuario');
+
+            if (!cedulaUsuario) {
+                mostrarAlerta('error', 'No se encontró información del usuario');
+                return;
+            }
+
+            $.ajax({
+                url: '/api/carrito/agregar',
+                type: 'POST',
+                data: {
+                    cedula: cedulaUsuario,
+                    codigo: productoSeleccionado.codigo,
+                    nombre: productoSeleccionado.nombre,
+                    cantidad: cantidad,
+                    precio: productoSeleccionado.precio
+                },
+                success: function(data) {
+                    if (data.success) {
+                        mostrarAlerta('success', `${productoSeleccionado.nombre} agregado al carrito`);
+                        cerrarModal();
+                        actualizarBadgeCarrito();
+                    } else {
+                        mostrarAlerta('error', 'Error al agregar producto');
+                    }
+                },
+                error: function(err) {
+                    mostrarAlerta('error', 'Error al conectar con el servidor');
+                }
+            });
+        }
+
+        function actualizarBadgeCarrito() {
+            const cedulaUsuario = localStorage.getItem('cedula-usuario');
+            if (!cedulaUsuario) return;
+
+            $.ajax({
+                url: '/api/carrito?cedula=' + cedulaUsuario,
+                type: 'GET',
+                success: function(data) {
+                    const badge = $('#badge-carrito');
+                    if (data.items && data.items.length > 0) {
+                        badge.text(data.items.length).show();
+                    } else {
+                        badge.hide();
+                    }
+                }
+            });
+        }
+
+        function mostrarAlerta(tipo, mensaje) {
+            const alertasContainer = $('#alertas');
+            const clase = tipo === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+            const icono = tipo === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+            
+            const alerta = `
+                <div class="border ${clase} px-4 py-3 rounded-md mb-4 flex items-center">
+                    <span class="mr-3">${icono}</span>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            
+            alertasContainer.append(alerta);
+            
+            setTimeout(() => {
+                alertasContainer.find('.border:first').fadeOut(function() { $(this).remove(); });
+            }, 4000);
+        }
+
+        // Cerrar modal al hacer clic fuera
+        $(document).click(function(event) {
+            const modal = $('#modal-carrito');
+            if (event.target === modal[0]) {
+                cerrarModal();
+            }
+        });
+    </script>
+</body>
+</html>
