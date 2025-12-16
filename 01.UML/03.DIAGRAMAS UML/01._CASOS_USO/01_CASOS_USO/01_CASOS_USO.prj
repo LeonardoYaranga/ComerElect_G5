@@ -498,6 +498,7 @@ Shadow=0</a:DisplayPreferences>
 <a:CreationDate>1765652615</a:CreationDate>
 <a:ModificationDate>1765652615</a:ModificationDate>
 <a:IconMode>2</a:IconMode>
+<a:EmptyAreaSize>(1200, 1200)</a:EmptyAreaSize>
 <a:Rect>((-1201,-148), (1198,2251))</a:Rect>
 <a:LineColor>12034707</a:LineColor>
 <a:FillColor>16437422</a:FillColor>
@@ -509,7 +510,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:GradientFillMode>65</a:GradientFillMode>
 <a:CustomPictureType>4</a:CustomPictureType>
 <a:CustomTextMode>1</a:CustomTextMode>
-<a:CustomPictureID>5B035F55-4D66-4EC4-B352-5A192F2AF3D0</a:CustomPictureID>
+<a:CustomPictureID>E8867657-92CD-414C-A4DD-4538653C04C8</a:CustomPictureID>
 <a:GradientEndColor>16777215</a:GradientEndColor>
 <a:KeepAspect>1</a:KeepAspect>
 <c:Object>
@@ -520,6 +521,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:CreationDate>1765652698</a:CreationDate>
 <a:ModificationDate>1765652698</a:ModificationDate>
 <a:IconMode>2</a:IconMode>
+<a:EmptyAreaSize>(1200, 1200)</a:EmptyAreaSize>
 <a:Rect>((-1201,-9647), (1198,-7248))</a:Rect>
 <a:LineColor>12034707</a:LineColor>
 <a:FillColor>16437422</a:FillColor>
@@ -531,7 +533,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:GradientFillMode>65</a:GradientFillMode>
 <a:CustomPictureType>4</a:CustomPictureType>
 <a:CustomTextMode>1</a:CustomTextMode>
-<a:CustomPictureID>5B035F55-4D66-4EC4-B352-5A192F2AF3D0</a:CustomPictureID>
+<a:CustomPictureID>E8867657-92CD-414C-A4DD-4538653C04C8</a:CustomPictureID>
 <a:GradientEndColor>16777215</a:GradientEndColor>
 <a:KeepAspect>1</a:KeepAspect>
 <c:Object>
@@ -542,6 +544,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:CreationDate>1765652762</a:CreationDate>
 <a:ModificationDate>1765652762</a:ModificationDate>
 <a:IconMode>2</a:IconMode>
+<a:EmptyAreaSize>(1200, 1200)</a:EmptyAreaSize>
 <a:Rect>((-21587,-20121), (-19188,-17722))</a:Rect>
 <a:LineColor>12034707</a:LineColor>
 <a:FillColor>16437422</a:FillColor>
@@ -553,7 +556,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:GradientFillMode>65</a:GradientFillMode>
 <a:CustomPictureType>4</a:CustomPictureType>
 <a:CustomTextMode>1</a:CustomTextMode>
-<a:CustomPictureID>5B035F55-4D66-4EC4-B352-5A192F2AF3D0</a:CustomPictureID>
+<a:CustomPictureID>E8867657-92CD-414C-A4DD-4538653C04C8</a:CustomPictureID>
 <a:GradientEndColor>16777215</a:GradientEndColor>
 <a:KeepAspect>1</a:KeepAspect>
 <c:Object>
@@ -564,6 +567,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:CreationDate>1765652762</a:CreationDate>
 <a:ModificationDate>1765652762</a:ModificationDate>
 <a:IconMode>2</a:IconMode>
+<a:EmptyAreaSize>(1200, 1200)</a:EmptyAreaSize>
 <a:Rect>((19227,-20121), (21626,-17722))</a:Rect>
 <a:LineColor>12034707</a:LineColor>
 <a:FillColor>16437422</a:FillColor>
@@ -575,7 +579,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:GradientFillMode>65</a:GradientFillMode>
 <a:CustomPictureType>4</a:CustomPictureType>
 <a:CustomTextMode>1</a:CustomTextMode>
-<a:CustomPictureID>5B035F55-4D66-4EC4-B352-5A192F2AF3D0</a:CustomPictureID>
+<a:CustomPictureID>E8867657-92CD-414C-A4DD-4538653C04C8</a:CustomPictureID>
 <a:GradientEndColor>16777215</a:GradientEndColor>
 <a:KeepAspect>1</a:KeepAspect>
 <c:Object>
@@ -586,6 +590,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:CreationDate>1765652762</a:CreationDate>
 <a:ModificationDate>1765652762</a:ModificationDate>
 <a:IconMode>2</a:IconMode>
+<a:EmptyAreaSize>(1200, 1200)</a:EmptyAreaSize>
 <a:Rect>((-11538,-20121), (-9139,-17722))</a:Rect>
 <a:LineColor>12034707</a:LineColor>
 <a:FillColor>16437422</a:FillColor>
@@ -597,7 +602,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:GradientFillMode>65</a:GradientFillMode>
 <a:CustomPictureType>4</a:CustomPictureType>
 <a:CustomTextMode>1</a:CustomTextMode>
-<a:CustomPictureID>5B035F55-4D66-4EC4-B352-5A192F2AF3D0</a:CustomPictureID>
+<a:CustomPictureID>E8867657-92CD-414C-A4DD-4538653C04C8</a:CustomPictureID>
 <a:GradientEndColor>16777215</a:GradientEndColor>
 <a:KeepAspect>1</a:KeepAspect>
 <c:Object>
@@ -608,6 +613,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:CreationDate>1765652762</a:CreationDate>
 <a:ModificationDate>1765652762</a:ModificationDate>
 <a:IconMode>2</a:IconMode>
+<a:EmptyAreaSize>(1200, 1200)</a:EmptyAreaSize>
 <a:Rect>((8890,-20121), (11289,-17722))</a:Rect>
 <a:LineColor>12034707</a:LineColor>
 <a:FillColor>16437422</a:FillColor>
@@ -619,7 +625,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:GradientFillMode>65</a:GradientFillMode>
 <a:CustomPictureType>4</a:CustomPictureType>
 <a:CustomTextMode>1</a:CustomTextMode>
-<a:CustomPictureID>5B035F55-4D66-4EC4-B352-5A192F2AF3D0</a:CustomPictureID>
+<a:CustomPictureID>E8867657-92CD-414C-A4DD-4538653C04C8</a:CustomPictureID>
 <a:GradientEndColor>16777215</a:GradientEndColor>
 <a:KeepAspect>1</a:KeepAspect>
 <c:Object>
@@ -630,6 +636,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:CreationDate>1765652762</a:CreationDate>
 <a:ModificationDate>1765652762</a:ModificationDate>
 <a:IconMode>2</a:IconMode>
+<a:EmptyAreaSize>(1200, 1200)</a:EmptyAreaSize>
 <a:Rect>((-1489,-20121), (910,-17722))</a:Rect>
 <a:LineColor>12034707</a:LineColor>
 <a:FillColor>16437422</a:FillColor>
@@ -641,7 +648,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:GradientFillMode>65</a:GradientFillMode>
 <a:CustomPictureType>4</a:CustomPictureType>
 <a:CustomTextMode>1</a:CustomTextMode>
-<a:CustomPictureID>5B035F55-4D66-4EC4-B352-5A192F2AF3D0</a:CustomPictureID>
+<a:CustomPictureID>E8867657-92CD-414C-A4DD-4538653C04C8</a:CustomPictureID>
 <a:GradientEndColor>16777215</a:GradientEndColor>
 <a:KeepAspect>1</a:KeepAspect>
 <c:Object>
@@ -663,7 +670,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:GradientFillMode>65</a:GradientFillMode>
 <a:CustomPictureType>4</a:CustomPictureType>
 <a:CustomTextMode>1</a:CustomTextMode>
-<a:CustomPictureID>5B035F55-4D66-4EC4-B352-5A192F2AF3D0</a:CustomPictureID>
+<a:CustomPictureID>E8867657-92CD-414C-A4DD-4538653C04C8</a:CustomPictureID>
 <a:GradientEndColor>16777215</a:GradientEndColor>
 <a:KeepAspect>1</a:KeepAspect>
 <c:Object>
@@ -689,7 +696,7 @@ LABL 0 Arial,8,N</a:FontList>
 <a:Code>CU_Otorgar_Credito_y_Generar_Tabla_de_Amortizacion</a:Code>
 <a:CreationDate>1765565435</a:CreationDate>
 <a:Creator>leona</a:Creator>
-<a:ModificationDate>1765652598</a:ModificationDate>
+<a:ModificationDate>1765651826</a:ModificationDate>
 <a:Modifier>leona</a:Modifier>
 <a:Location>file:///%[PRJ_ROOT_DIR]%/CU_Otorgar_Credito_y_Generar_Tabla_de_Amortización.oom</a:Location>
 <a:Extension>oom</a:Extension>
