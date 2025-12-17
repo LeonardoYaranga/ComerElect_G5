@@ -46,6 +46,7 @@ import coil.request.ImageRequest
 
 @Composable
 fun FacturasScreen(
+    cedula: String,
     onCreateFactura: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: FacturasViewModel = viewModel()
@@ -66,6 +67,11 @@ fun FacturasScreen(
     // Cargar facturas al iniciar
     LaunchedEffect(Unit) {
         viewModel.cargarFacturas()
+    }
+
+    // Filtrar facturas por cédula del cliente
+    val facturasDelUsuario = remember(facturas, cedula) {
+        facturas.filter { it.cedula == cedula }
     }
 
     Scaffold(
@@ -159,7 +165,7 @@ fun FacturasScreen(
                 ) {
                     CircularProgressIndicator()
                 }
-            } else if (facturas.isEmpty()) {
+            } else if (facturasDelUsuario.isEmpty()) {
                 // Estado vacío
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -178,8 +184,8 @@ fun FacturasScreen(
                 }
             } else {
                 // Lista de facturas ordenadas por fecha descendente (más recientes primero)
-                val facturasOrdenadas = remember(facturas) {
-                    facturas.sortedByDescending { it.fecha }
+                val facturasOrdenadas = remember(facturasDelUsuario) {
+                    facturasDelUsuario.sortedByDescending { it.fecha }
                 }
                 
                 LazyColumn(

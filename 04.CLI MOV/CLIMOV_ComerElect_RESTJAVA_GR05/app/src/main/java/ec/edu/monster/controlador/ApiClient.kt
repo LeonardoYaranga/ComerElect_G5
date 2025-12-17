@@ -11,10 +11,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.137.1:8081"
-
+    // Backend compartido via ngrok desde otra computadora
+    private const val BASE_URL = "https://7a08bd688cd8.ngrok-free.app"
+    
     private val loggingInterceptor = HttpLoggingInterceptor { message ->
         Log.d("HTTP_LOG", message)
     }.apply {
@@ -23,6 +25,9 @@ object ApiClient {
 
     private val client = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
         .build()
 
     // Gson personalizado con adaptadores para LocalDate

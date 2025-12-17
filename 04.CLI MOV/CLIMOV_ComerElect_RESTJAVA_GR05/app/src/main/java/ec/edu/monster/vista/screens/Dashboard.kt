@@ -23,26 +23,16 @@ import java.text.NumberFormat
 import java.util.Locale
 import androidx.compose.material.icons.filled.*        // Aquí están los que usamos
 
+/**
+ * Dashboard para ADMIN.
+ * IMPORTANTE: No incluye NavShell, se renderiza dentro del NavShell de MainActivity.
+ */
 @Composable
 fun Dashboard(username: String, modifier: Modifier = Modifier) {
-    NavShell { currentDestination ->
-        when (currentDestination) {
-            AppDestinations.HOME -> {
-                DashboardHomeScreen(
-                    username = username.ifBlank { "Usuario" },
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-
-            AppDestinations.PRODUCTOS -> {
-                ElectrodomesticosScreen(modifier = Modifier.fillMaxSize())
-            }
-
-            AppDestinations.FACTURAS -> {
-                FacturasScreen(onCreateFactura = {}, modifier = Modifier.fillMaxSize())
-            }
-        }
-    }
+    DashboardHomeScreen(
+        username = username.ifBlank { "Usuario" },
+        modifier = modifier
+    )
 }
 
 @Composable

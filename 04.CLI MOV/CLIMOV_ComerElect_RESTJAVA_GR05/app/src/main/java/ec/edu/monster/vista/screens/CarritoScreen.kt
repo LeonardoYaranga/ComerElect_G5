@@ -13,31 +13,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ec.edu.monster.controlador.carrito.CarritoService
-import ec.edu.monster.modelo.ConfirmacionCarrito
-import ec.edu.monster.modelo.ProductoCarrito
-import ec.edu.monster.vista.viewmodel.CarritoViewModel
+import ec.edu.monster.controlador.carrito.CarritoLocalService
+import ec.edu.monster.controlador.facturas.FacturaService
+import ec.edu.monster.modelo.FacturaRequest
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
 fun CarritoScreen(
-    cedula: String,
-    viewModel: CarritoViewModel = viewModel(),
-    carritoService: CarritoService = CarritoService()
+    cedula: String
 ) {
-    val items by viewModel.items.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val error by viewModel.error.collectAsState()
+    val carritoLocal = remember { CarritoLocalService.getInstance() }
+    val facturaService = remember { FacturaService() }
+    
+    var items by remember { mutableStateOf(carritoLocal.obtenerItems()) }
+    var loading by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var showConfirmDialog by remember { mutableStateOf(false) }
-    var cuotas by remember { mutableStateOf(1) }
+    var cuotas by remember { mutableStateOf(3) } // Mínimo 3 cuotas
 
+    // Recargar items cuando se abre la pantalla
     LaunchedEffect(Unit) {
-        viewModel.cargarCarrito(cedula)
+        android.util.Log.d("CARRITO_SCREEN", "Cargando carrito local para cedula: $cedula")
+        items = carritoLocal.obtenerItems()
+        android.util.Log.d("CARRITO_SCREEN", "Items cargados: ${items.size} productos")
     }
 
     Scaffold(
@@ -50,9 +56,12 @@ fun CarritoScreen(
                         text = "Total: ${NumberFormat.getCurrencyInstance(Locale("es", "EC")).format(total)}",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).padding(start = 16.dp)
                     )
-                    Button(onClick = { showConfirmDialog = true }) {
+                    Button(
+                        onClick = { showConfirmDialog = true },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
                         Text("Pagar")
                     }
                 }
@@ -65,12 +74,17 @@ fun CarritoScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 error != null -> {
+                    android.util.Log.e("CARRITO_SCREEN", "Error mostrando carrito: $error")
                     Column(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text("Error: ${error}")
-                        Button(onClick = { viewModel.cargarCarrito(cedula) }) {
+                        Button(onClick = { 
+                            android.util.Log.d("CARRITO_SCREEN", "Reintentando cargar carrito")
+                            items = carritoLocal.obtenerItems()
+                            error = null
+                        }) {
                             Text("Reintentar")
                         }
                     }
@@ -87,14 +101,11 @@ fun CarritoScreen(
                             CarritoItemCard(
                                 item = item,
                                 onEliminar = {
+                                    android.util.Log.d("CARRITO_SCREEN", "Eliminando: ${item.producto.codigo}")
+                                    carritoLocal.remover(item.producto.codigo)
+                                    items = carritoLocal.obtenerItems()
                                     scope.launch {
-                                        try {
-                                            carritoService.remover(item.codigo, cedula)
-                                            viewModel.cargarCarrito(cedula)
-                                            snackbarHostState.showSnackbar("Producto eliminado")
-                                        } catch (e: Exception) {
-                                            snackbarHostState.showSnackbar("Error: ${e.message}")
-                                        }
+                                        snackbarHostState.showSnackbar("Producto eliminado")
                                     }
                                 }
                             )
@@ -109,48 +120,140 @@ fun CarritoScreen(
     if (showConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showConfirmDialog = false },
-            title = { Text("Confirmar compra") },
+            title = { Text("Confirmar compra a crédito") },
             text = {
                 Column {
                     Text("¿A cuántas cuotas desea diferir el pago?")
+                    Text(
+                        text = "Mínimo 3 cuotas, máximo 24 cuotas",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = cuotas.toString(),
-                        onValueChange = { cuotas = it.toIntOrNull() ?: 1 },
+                        onValueChange = { 
+                            val nuevasCuotas = it.toIntOrNull() ?: 3
+                            cuotas = nuevasCuotas.coerceIn(3, 24)
+                        },
                         label = { Text("Número de cuotas") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
             },
             confirmButton = {
-                Button(onClick = {
-                    scope.launch {
-                        try {
-                            val confirmacion = ConfirmacionCarrito(cedula, cuotas)
-                            val factura = carritoService.confirmar(confirmacion)
-                            snackbarHostState.showSnackbar("Compra confirmada. Factura: ${factura.numeroFactura}")
-                            showConfirmDialog = false
-                            viewModel.cargarCarrito(cedula) // Recargar para limpiar
-                        } catch (e: Exception) {
-                            snackbarHostState.showSnackbar("Error: ${e.message}")
+                Button(
+                    onClick = {
+                        scope.launch {
+                            loading = true
+                            try {
+                                android.util.Log.d("CARRITO_SCREEN", "Creando factura...")
+                                android.util.Log.d("CARRITO_SCREEN", "Cedula: $cedula, Cuotas: $cuotas")
+                                
+                                // Crear FacturaRequest con los items del carrito
+                                val detalles = items.map { item ->
+                                    FacturaRequest.DetalleRequest(
+                                        codigo = item.producto.codigo,
+                                        cantidad = item.cantidad
+                                    )
+                                }
+                                
+                                val facturaRequest = FacturaRequest(
+                                    cedula = cedula,
+                                    tipoPago = "C", // Crédito
+                                    numeroCuotas = cuotas,
+                                    detalles = detalles
+                                )
+                                
+                                android.util.Log.d("CARRITO_SCREEN", "Detalles: ${detalles.size} productos")
+                                
+                                val factura = facturaService.generarFactura(facturaRequest)
+                                
+                                android.util.Log.d("CARRITO_SCREEN", "✓ Factura creada: ${factura.numFactura}")
+                                
+                                // Limpiar carrito
+                                carritoLocal.limpiar()
+                                items = emptyList()
+                                
+                                snackbarHostState.showSnackbar(
+                                    "Compra confirmada. Factura: ${factura.numFactura}",
+                                    duration = SnackbarDuration.Long
+                                )
+                                showConfirmDialog = false
+                            } catch (e: Exception) {
+                                android.util.Log.e("CARRITO_SCREEN", "✗ Error creando factura", e)
+                                errorMessage = e.message ?: "Error desconocido al crear la factura"
+                                showErrorDialog = true
+                                showConfirmDialog = false
+                            } finally {
+                                loading = false
+                            }
                         }
+                    },
+                    enabled = !loading && cuotas in 3..24
+                ) {
+                    if (loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Confirmar")
                     }
-                }) {
-                    Text("Confirmar")
                 }
             },
             dismissButton = {
-                Button(onClick = { showConfirmDialog = false }) {
+                TextButton(
+                    onClick = { showConfirmDialog = false },
+                    enabled = !loading
+                ) {
                     Text("Cancelar")
                 }
             }
         )
     }
-}
+    // Diálogo de error
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Error",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            title = { Text("Error al procesar la compra") },
+            text = {
+                Column {
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Por favor, verifica la información e intenta nuevamente.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showErrorDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Entendido")
+                }
+            }
+        )
+    }}
 
 @Composable
 fun CarritoItemCard(
-    item: ProductoCarrito,
+    item: CarritoLocalService.ItemCarritoLocal,
     onEliminar: () -> Unit
 ) {
     Card(
@@ -165,13 +268,20 @@ fun CarritoItemCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = item.nombre,
+                    text = item.producto.nombre,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
                 Text("Cantidad: ${item.cantidad}")
                 Text(
+                    text = "Precio unitario: ${NumberFormat.getCurrencyInstance(Locale("es", "EC")).format(item.producto.precio)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+                Text(
                     text = "Subtotal: ${NumberFormat.getCurrencyInstance(Locale("es", "EC")).format(item.subtotal)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                     color = Color(0xFF4CAF50)
                 )
             }

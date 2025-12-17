@@ -68,4 +68,9 @@ class FacturaService(
     suspend fun obtenerAmortizacion(numFactura: String): List<AmortizacionDTO> = withContext(Dispatchers.IO) {
         controller.obtenerAmortizacion(numFactura)
     }
+
+    suspend fun obtenerPorCedula(cedula: String): List<FacturaResponse> = withContext(Dispatchers.IO) {
+        val todasLasFacturas = controller.obtenerTodas()
+        todasLasFacturas.filter { it.cedula == cedula }
+    }
 }

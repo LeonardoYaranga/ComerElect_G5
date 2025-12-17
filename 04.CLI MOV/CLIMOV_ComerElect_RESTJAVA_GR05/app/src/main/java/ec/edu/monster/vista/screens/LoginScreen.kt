@@ -35,17 +35,21 @@ import ec.edu.monster.controlador.auth.UserService
 import kotlinx.coroutines.launch
 
 /**
- * Pantalla de login simulado con usuarios predefinidos.
+ * Pantalla de login con campos de usuario y contraseña.
  */
 @Composable
 fun LoginScreen(
     onLoginSuccess: (String) -> Unit
 ) {
-    val usuarios = listOf(
-        "Usuario 1" to "1234567890",
-        "Usuario 2" to "0987654321",
-        "Usuario 3" to "1111111111"
-    )
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
+    var errorMsg by remember { mutableStateOf<String?>(null) }
+
+    val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+    val userService = UserService()
 
     Box(
         modifier = Modifier
@@ -96,35 +100,8 @@ fun LoginScreen(
                 )
             }
 
-            Text(
-                text = "Selecciona un Usuario",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color.White,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-
-            usuarios.forEach { (nombre, cedula) ->
-                Button(
-                    onClick = { onLoginSuccess(cedula) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp)
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF667eea)
-                    )
-                ) {
-                    Text(
-                        text = nombre,
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
-            }
-        }
-    }
-}
+            // Formulario de login
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp)),
@@ -223,14 +200,14 @@ fun LoginScreen(
                                     errorMsg = null
                                     loading = true
                                     scope.launch {
-                                        val ok = try {
+                                        val usuario = try {
                                             userService.login(username.trim(), password)
                                         } catch (t: Throwable) {
-                                            false
+                                            null
                                         }
                                         loading = false
-                                        if (ok) {
-                                            onLoginSuccess(username.trim())
+                                        if (usuario != null) {
+                                            onLoginSuccess(usuario.cedula)
                                         } else {
                                             errorMsg = "Credenciales inválidas. Intenta nuevamente."
                                         }
@@ -282,14 +259,14 @@ fun LoginScreen(
                             errorMsg = null
                             loading = true
                             scope.launch {
-                                val ok = try {
+                                val usuario = try {
                                     userService.login(username.trim(), password)
                                 } catch (t: Throwable) {
-                                    false
+                                    null
                                 }
                                 loading = false
-                                if (ok) {
-                                    onLoginSuccess(username.trim())
+                                if (usuario != null) {
+                                    onLoginSuccess(usuario.cedula)
                                 } else {
                                     errorMsg = "Credenciales inválidas. Intenta nuevamente."
                                 }

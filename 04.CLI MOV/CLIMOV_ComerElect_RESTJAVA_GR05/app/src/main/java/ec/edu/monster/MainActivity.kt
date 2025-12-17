@@ -15,11 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import ec.edu.monster.controlador.auth.SessionManager
+import ec.edu.monster.controlador.auth.UserService
 import ec.edu.monster.vista.screens.CatalogoScreen
 import ec.edu.monster.vista.screens.CarritoScreen
 import ec.edu.monster.vista.screens.LoginScreen
+import ec.edu.monster.vista.screens.ElectrodomesticosScreen
+import ec.edu.monster.vista.screens.Dashboard
+import ec.edu.monster.vista.screens.DashboardCliente
 import ec.edu.monster.vista.components.NavShell
+import ec.edu.monster.vista.components.NavShellAdmin
 import ec.edu.monster.vista.navigation.AppDestinations
+import ec.edu.monster.vista.navigation.AppDestinationsAdmin
+import ec.edu.monster.vista.screens.FacturasScreen
 import ec.edu.monster.vista.theme.Comercializadora_ElecrodomesticosTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,25 +34,90 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val sessionManager = SessionManager(this)
+        val userService = UserService()
+        
         setContent {
             Comercializadora_ElecrodomesticosTheme {
-                    val cedula = sessionManager.getCedula()
-                    val loggedIn = rememberSaveable { mutableStateOf(cedula != null) }
-                    val usernameState = rememberSaveable { mutableStateOf("") }
+                    val hayUsuarioLogueado = sessionManager.hayUsuarioLogueado()
+                    val loggedIn = rememberSaveable { mutableStateOf(hayUsuarioLogueado) }
 
                     if (!loggedIn.value) {
                         LoginScreen(
                             onLoginSuccess = { cedula ->
-                                sessionManager.saveCedula(cedula)
-                                loggedIn.value = true
+                                // Obtener usuario completo y guardar sesión
+                                val usuario = userService.obtenerUsuarioPorCedula(cedula)
+                                if (usuario != null) {
+                                    sessionManager.guardarSesion(usuario)
+                                    loggedIn.value = true
+                                }
                             }
                         )
                     } else {
-                        NavShell(cedula = cedula ?: "") { currentDestination, ced ->
-                            when (currentDestination) {
-                                AppDestinations.HOME -> CatalogoScreen(cedula = ced)
-                                AppDestinations.PRODUCTOS -> CarritoScreen(cedula = ced)
-                                AppDestinations.FACTURAS -> FacturasScreen(cedula = ced)
+                        val cedula = sessionManager.getCedula() ?: ""
+                        val esAdmin = sessionManager.esAdmin()
+                        val nombreCompleto = sessionManager.getNombreCompleto() ?: "Usuario"
+                        
+                        if (esAdmin) {
+                            // Navegación para ADMIN
+                            NavShellAdmin(
+                                cedula = cedula,
+                                nombreUsuario = nombreCompleto,
+                                onLogout = {
+                                    sessionManager.clearSession()
+                                    loggedIn.value = false
+                                }
+                            ) { currentDestination, ced ->
+                                when (currentDestination) {
+                                    AppDestinationsAdmin.HOME -> {
+                                        Dashboard(username = nombreCompleto)
+                                    }
+                                    AppDestinationsAdmin.PRODUCTOS -> {
+                                        ElectrodomesticosScreen()
+                                    }
+                                    AppDestinationsAdmin.FACTURAS -> {
+                                        FacturasScreen(cedula = ced)
+                                    }
+                                }
+                            }
+                        } else {
+                            // Navegación para CLIENTE
+                            var clienteCurrentDestination = rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+                            
+                            NavShell(
+                                cedula = cedula,
+                                nombreUsuario = nombreCompleto,
+                                onLogout = {
+                                    sessionManager.clearSession()
+                                    loggedIn.value = false
+                                }
+                            ) { currentDestination, ced ->
+                                clienteCurrentDestination.value = currentDestination
+                                when (currentDestination) {
+                                    AppDestinations.HOME -> {
+                                        DashboardCliente(
+                                            cedula = ced,
+                                            nombreCompleto = nombreCompleto,
+                                            onNavigateToCarrito = { 
+                                                clienteCurrentDestination.value = AppDestinations.CARRITO 
+                                            },
+                                            onNavigateToCatalogo = { 
+                                                clienteCurrentDestination.value = AppDestinations.CATALOGO 
+                                            },
+                                            onNavigateToFacturas = { 
+                                                clienteCurrentDestination.value = AppDestinations.FACTURAS 
+                                            }
+                                        )
+                                    }
+                                    AppDestinations.CATALOGO -> {
+                                        CatalogoScreen(cedula = ced)
+                                    }
+                                    AppDestinations.CARRITO -> {
+                                        CarritoScreen(cedula = ced)
+                                    }
+                                    AppDestinations.FACTURAS -> {
+                                        FacturasScreen(cedula = ced)
+                                    }
+                                }
                             }
                         }
                     }
@@ -57,12 +129,13 @@ class MainActivity : ComponentActivity() {
 @PreviewScreenSizes
 @Composable
 fun Comercializadora_ElecrodomesticosApp() {
-    NavShell { currentDestination ->
+    NavShell(cedula = "1234567890") { currentDestination, ced ->
         when (currentDestination) {
             AppDestinations.HOME -> Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                 Greeting(name = "Android", modifier = Modifier.padding(innerPadding))
             }
-            AppDestinations.PRODUCTOS -> androidx.compose.material3.Text("Productos (preview)")
+            AppDestinations.CATALOGO -> androidx.compose.material3.Text("Catálogo (preview)")
+            AppDestinations.CARRITO -> androidx.compose.material3.Text("Carrito (preview)")
             AppDestinations.FACTURAS -> androidx.compose.material3.Text("Facturas (preview)")
         }
     }
