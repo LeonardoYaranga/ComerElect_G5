@@ -14,6 +14,7 @@ C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\CrearFacturaViewModel.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\LoginViewModel.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\vista\Combobox.java
+C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\services\CarritoLocalService.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\CuotaAmortizacion.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\vista\Modal.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\vista\DashboardCliente.java
@@ -31,11 +32,13 @@ C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\FacturaResumen.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\vista\ModernPanel.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\SolicitudFactura.java
+C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\services\CarritoService.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\DashboardViewModel.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\services\ElectrodomesticoService.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\vista\CreateInvoice.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\vista\Dashboard.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\DetalleProducto.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\Electrodomestico.java
+C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\models\CarritoItem.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\vista\Appliance.java
 C:\Users\joela\Documents\01-UNIVERSIDAD\01-ARQUITECTURA\PARCIAL-2\ComerElect_G5\04.CLIESC\CLIESC_Comercializadora_RESTJAVA_GR05\src\main\java\ec\edu\monster\vista\Home.java

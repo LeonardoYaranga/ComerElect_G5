@@ -1,22 +1,52 @@
 package ec.edu.monster.vista;
 
+import ec.edu.monster.models.CarritoItem;
+import ec.edu.monster.services.CarritoLocalService;
+import ec.edu.monster.services.FacturaService;
+import ec.edu.monster.models.SolicitudFactura;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import java.util.Map;
+import java.math.BigDecimal;
+
 /**
  *
  * @author Dome
  */
 public class MyCart extends javax.swing.JPanel {
     private HomeCliente parentFrame;
+    private CarritoLocalService carritoService;
+    private FacturaService facturaService;
+    private String cedulaUsuario = "1234567890"; // TODO: Obtener de sesión
 
     public MyCart(HomeCliente parent) {
-        initComponents();
         this.parentFrame = parent;
 
+        // Usar servicio local de carrito (singleton)
+        this.carritoService = CarritoLocalService.getInstance();
+
+        // Inicializar servicio de facturas
+        org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+        this.facturaService = new FacturaService(restTemplate, "http://192.168.137.1:8081/api");
+
+        initComponents();
+
+        // Configurar tabla
+        configurarTabla();
+
+        // Configurar combobox de cuotas
+        configurarCombobox();
+
+        // Cargar carrito
+        cargarCarrito();
     }
 
     // </editor-fold>
 
-@SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel17 = new javax.swing.JLabel();
@@ -129,59 +159,99 @@ public class MyCart extends javax.swing.JPanel {
         javax.swing.GroupLayout PanelCartLayout = new javax.swing.GroupLayout(PanelCart);
         PanelCart.setLayout(PanelCartLayout);
         PanelCartLayout.setHorizontalGroup(
-            PanelCartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelCartLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(PanelCartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btn_BackProducts, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(combobox1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSeparator1)
-                    .addGroup(PanelCartLayout.createSequentialGroup()
-                        .addComponent(lblNameProduct3, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblCantidadProductos1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, PanelCartLayout.createSequentialGroup()
-                        .addComponent(lblNameProduct2, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-                        .addComponent(lblCantidadProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(lblTotal, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btn_confirmBuy, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, PanelCartLayout.createSequentialGroup()
-                        .addGroup(PanelCartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblTitle1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblNameProduct, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblNameProduct1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(19, 19, 19))
-        );
+                PanelCartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelCartLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(PanelCartLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(btn_BackProducts, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(combobox1, javax.swing.GroupLayout.Alignment.LEADING,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jSeparator1)
+                                        .addGroup(PanelCartLayout.createSequentialGroup()
+                                                .addComponent(lblNameProduct3, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                        89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(lblCantidadProductos1,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 90,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, PanelCartLayout
+                                                .createSequentialGroup()
+                                                .addComponent(lblNameProduct2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                        168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16,
+                                                        Short.MAX_VALUE)
+                                                .addComponent(lblCantidadProductos,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 61,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(lblTotal, javax.swing.GroupLayout.Alignment.LEADING,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btn_confirmBuy, javax.swing.GroupLayout.Alignment.LEADING,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, PanelCartLayout
+                                                .createSequentialGroup()
+                                                .addGroup(PanelCartLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(lblTitle1,
+                                                                javax.swing.GroupLayout.Alignment.LEADING,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE, 126,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(lblNameProduct,
+                                                                javax.swing.GroupLayout.Alignment.LEADING,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE, 219,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(lblNameProduct1,
+                                                                javax.swing.GroupLayout.Alignment.LEADING,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE, 219,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(19, 19, 19)));
         PanelCartLayout.setVerticalGroup(
-            PanelCartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelCartLayout.createSequentialGroup()
-                .addComponent(lblTitle1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(PanelCartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNameProduct2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCantidadProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(PanelCartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNameProduct3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCantidadProductos1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblNameProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(combobox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblNameProduct1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btn_confirmBuy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btn_BackProducts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
-        );
+                PanelCartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(PanelCartLayout.createSequentialGroup()
+                                .addComponent(lblTitle1, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(PanelCartLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblNameProduct2, javax.swing.GroupLayout.PREFERRED_SIZE, 24,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblCantidadProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 24,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(PanelCartLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblNameProduct3, javax.swing.GroupLayout.PREFERRED_SIZE, 24,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblCantidadProductos1, javax.swing.GroupLayout.PREFERRED_SIZE, 24,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblNameProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 24,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(combobox1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblNameProduct1, javax.swing.GroupLayout.PREFERRED_SIZE, 24,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btn_confirmBuy, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btn_BackProducts, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(29, Short.MAX_VALUE)));
 
         add(PanelCart, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 70, 280, 420));
 
@@ -192,19 +262,18 @@ public class MyCart extends javax.swing.JPanel {
         javax.swing.GroupLayout PanelCart1Layout = new javax.swing.GroupLayout(PanelCart1);
         PanelCart1.setLayout(PanelCart1Layout);
         PanelCart1Layout.setHorizontalGroup(
-            PanelCart1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelCart1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(TableProducts, javax.swing.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+                PanelCart1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(PanelCart1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(TableProducts, javax.swing.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE)
+                                .addContainerGap()));
         PanelCart1Layout.setVerticalGroup(
-            PanelCart1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelCart1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(TableProducts, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
-        );
+                PanelCart1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(PanelCart1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(TableProducts, javax.swing.GroupLayout.PREFERRED_SIZE, 517,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(17, Short.MAX_VALUE)));
 
         add(PanelCart1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 490, 550));
 
@@ -212,57 +281,254 @@ public class MyCart extends javax.swing.JPanel {
         getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btn_confirmBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_confirmBuyActionPerformed
-        java.awt.Window parentWindow = javax.swing.SwingUtilities.getWindowAncestor(this);
+    /**
+     * Configura la tabla de productos
+     */
+    private void configurarTabla() {
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[][] {},
+                new String[] { "Producto", "Precio", "Cantidad", "Subtotal", "Acción" }) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 4; // Solo la columna de acción es editable
+            }
+        };
+        TableProducts.getTable().setModel(model);
+    }
 
-        // 2. Nos aseguramos de que sea un Frame (lo cual es, es tu Home)
-        if (parentWindow instanceof java.awt.Frame) {
-            java.awt.Frame parentFrame = (java.awt.Frame) parentWindow;
+    /**
+     * Configura el combobox de cuotas
+     */
+    private void configurarCombobox() {
+        combobox1.removeAllItems();
+        combobox1.addItem("-- Selecciona --");
+        combobox1.addItem("3 cuotas");
+        combobox1.addItem("6 cuotas");
+        combobox1.addItem("12 cuotas");
+        combobox1.addItem("24 cuotas");
+    }
 
-            // 3. Creamos el modal, pasándole el Frame padre y 'true' para que sea modal
-            ModalConfirmBuy confirmBuy = new ModalConfirmBuy(parentFrame, true, this.parentFrame);
+    /**
+     * Carga los items del carrito desde el servicio local
+     */
+    private void cargarCarrito() {
+        List<CarritoItem> items = carritoService.obtenerItems();
 
-            // 4. Mostramos el modal.
-            // El código se detendrá aquí hasta que el usuario cierre el diálogo.
-            confirmBuy.setVisible(true);
+        if (items == null || items.isEmpty()) {
+            mostrarCarritoVacio();
+        } else {
+            mostrarCarritoConItems(items);
+        }
+    }
 
-            // 5. (IMPORTANTE) Recogemos los datos DESPUÉS de que el modal se cierra.
-            String resultado = confirmBuy.getSeleccion(); // Vemos si el usuario presionó "Crear" o "Cancelar"
+    /**
+     * Muestra el carrito vacío
+     */
+    private void mostrarCarritoVacio() {
+        DefaultTableModel model = (DefaultTableModel) TableProducts.getTable().getModel();
+        model.setRowCount(0);
 
-            // 6. Verificamos si el usuario le dio a "Crear" (revisarás esto en el Modal.java)
-            if (resultado.equals("VER_FACTURAS")) {
-                if (this.parentFrame != null) {
-                    this.parentFrame.showPanel(new MyInvoices(this.parentFrame));
-                }
+        lblCantidadProductos.setText("0");
+        lblCantidadProductos1.setText("$0.00");
+        lblTotal.setText("$0.00");
 
+        btn_confirmBuy.setEnabled(false);
+        combobox1.setEnabled(false);
+    }
 
-            } else {
-                // El usuario le dio a "Cancelar"
-                if (this.parentFrame != null) {
-                    this.parentFrame.showPanel(new Products(this.parentFrame));
+    /**
+     * Muestra el carrito con items
+     */
+    private void mostrarCarritoConItems(List<CarritoItem> items) {
+        DefaultTableModel model = (DefaultTableModel) TableProducts.getTable().getModel();
+        model.setRowCount(0);
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (CarritoItem item : items) {
+            String nombre = item.getNombre();
+            BigDecimal precio = item.getPrecioUnitario();
+            int cantidad = item.getCantidad();
+            BigDecimal subtotal = item.getSubtotal();
+            total = total.add(subtotal);
+
+            String codigo = item.getCodigo();
+
+            model.addRow(new Object[] {
+                    nombre,
+                    String.format("$%.2f", precio),
+                    cantidad,
+                    String.format("$%.2f", subtotal),
+                    codigo // Guardamos el código para referencia
+            });
+        }
+
+        // Actualizar resumen
+        lblCantidadProductos.setText(String.valueOf(items.size()));
+        lblCantidadProductos1.setText(String.format("$%.2f", total));
+        lblTotal.setText(String.format("$%.2f", total));
+
+        btn_confirmBuy.setEnabled(true);
+        combobox1.setEnabled(true);
+    }
+
+    /**
+     * Elimina un producto del carrito
+     */
+    private void eliminarProducto(String codigo) {
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "¿Estás seguro de que deseas remover este producto?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            carritoService.removerProducto(codigo);
+            mostrarMensaje("Producto removido del carrito", "success");
+            cargarCarrito(); // Recargar el carrito
+        }
+    }
+
+    /**
+     * Muestra un mensaje al usuario
+     */
+    private void mostrarMensaje(String mensaje, String tipo) {
+        int tipoMensaje = JOptionPane.INFORMATION_MESSAGE;
+        String titulo = "Información";
+
+        if (tipo.equals("error")) {
+            tipoMensaje = JOptionPane.ERROR_MESSAGE;
+            titulo = "Error";
+        } else if (tipo.equals("success")) {
+            tipoMensaje = JOptionPane.INFORMATION_MESSAGE;
+            titulo = "Éxito";
+        }
+
+        JOptionPane.showMessageDialog(this, mensaje, titulo, tipoMensaje);
+    }
+
+    /**
+     * Obtiene el número de cuotas seleccionado
+     */
+    public int getNumeroCuotas() {
+        String seleccion = (String) combobox1.getSelectedItem();
+        if (seleccion == null || seleccion.contains("--")) {
+            return 0;
+        }
+
+        // Extraer número de la cadena "X cuotas"
+        try {
+            return Integer.parseInt(seleccion.split(" ")[0]);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Extrae el mensaje de error del JSON de respuesta
+     */
+    private String extraerMensajeError(Exception e) {
+        String mensajeCompleto = e.getMessage();
+
+        // Buscar el patrón {"error":"...","message":"..."}
+        try {
+            int inicioJson = mensajeCompleto.indexOf("{");
+            if (inicioJson != -1) {
+                String json = mensajeCompleto.substring(inicioJson);
+
+                // Extraer el campo "message"
+                int inicioMessage = json.indexOf("\"message\":\"");
+                if (inicioMessage != -1) {
+                    inicioMessage += 11; // Longitud de "message":"
+                    int finMessage = json.indexOf("\"", inicioMessage);
+                    if (finMessage != -1) {
+                        return json.substring(inicioMessage, finMessage);
+                    }
                 }
             }
+        } catch (Exception ex) {
+            // Si falla la extracción, devolver mensaje original
         }
-    }//GEN-LAST:event_btn_confirmBuyActionPerformed
 
-    private void btn_BackProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BackProductsActionPerformed
+        return mensajeCompleto;
+    }
+
+    /**
+     * Crea la factura a partir del carrito y muestra el modal
+     */
+    private void confirmarCompra() {
+        // Validar que el carrito no esté vacío
+        if (carritoService.estaVacio()) {
+            mostrarMensaje("El carrito está vacío", "error");
+            return;
+        }
+
+        // Obtener número de cuotas
+        int numeroCuotas = getNumeroCuotas();
+
+        // Validar selección de cuotas
+        if (numeroCuotas == 0) {
+            mostrarMensaje("Debes seleccionar el número de cuotas", "error");
+            return;
+        }
+
+        // Crear factura usando SwingWorker para no bloquear la UI
+        SwingWorker<Map<String, Object>, Void> worker = new SwingWorker<Map<String, Object>, Void>() {
+            @Override
+            protected Map<String, Object> doInBackground() throws Exception {
+                // Convertir carrito a solicitud de factura
+                String tipoPago = "C"; // C = Crédito (siempre con cuotas)
+                SolicitudFactura solicitud = carritoService.convertirASolicitudFactura(
+                        cedulaUsuario,
+                        tipoPago,
+                        numeroCuotas);
+
+                // Crear factura en el servidor
+                return facturaService.crearFactura(solicitud);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    Map<String, Object> response = get();
+
+                    // Vaciar el carrito después de la compra exitosa
+                    carritoService.vaciarCarrito();
+                    cargarCarrito(); // Actualizar vista
+
+                    // Mostrar modal de confirmación
+                    mostrarMensaje("Factura creada exitosamente", "success");
+
+                    // Navegar a facturas o productos
+                    if (parentFrame != null) {
+                        parentFrame.showPanel(new MyInvoices(parentFrame));
+                    }
+
+                } catch (Exception e) {
+                    String mensajeError = extraerMensajeError(e);
+                    mostrarMensaje(mensajeError, "error");
+                    e.printStackTrace();
+                }
+            }
+        };
+        worker.execute();
+    }
+
+    private void btn_confirmBuyActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_confirmBuyActionPerformed
+        confirmarCompra();
+    }// GEN-LAST:event_btn_confirmBuyActionPerformed
+
+    private void btn_BackProductsActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_BackProductsActionPerformed
         if (parentFrame != null) {
             parentFrame.showPanel(new Products(parentFrame));
         } else {
             System.err.println("Error: Products no está asociado a un Home.");
         }
-    }//GEN-LAST:event_btn_BackProductsActionPerformed
+    }// GEN-LAST:event_btn_BackProductsActionPerformed
 
-    private void combobox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combobox1ActionPerformed
+    private void combobox1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_combobox1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_combobox1ActionPerformed
-    
-    
-    
-    
-
-    
-
+    }// GEN-LAST:event_combobox1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private ec.edu.monster.vista.ModernPanel PanelCart;
