@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                                         ElectrodomesticosScreen()
                                     }
                                     AppDestinationsAdmin.FACTURAS -> {
-                                        FacturasScreen(cedula = ced)
+                                        FacturasScreen(cedula = ced, esAdmin = true)
                                     }
                                 }
                             }
@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity() {
                                         CarritoScreen(cedula = ced)
                                     }
                                     AppDestinations.FACTURAS -> {
-                                        FacturasScreen(cedula = ced)
+                                        FacturasScreen(cedula = ced, esAdmin = false)
                                     }
                                 }
                             }

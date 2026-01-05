@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
     // Backend compartido via ngrok desde otra computadora
-    private const val BASE_URL = "https://7a08bd688cd8.ngrok-free.app"
+    private const val BASE_URL = "http://192.168.137.1:8081"
     
     private val loggingInterceptor = HttpLoggingInterceptor { message ->
         Log.d("HTTP_LOG", message)

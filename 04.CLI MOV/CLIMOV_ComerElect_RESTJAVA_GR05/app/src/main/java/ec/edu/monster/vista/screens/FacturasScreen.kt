@@ -47,6 +47,7 @@ import coil.request.ImageRequest
 @Composable
 fun FacturasScreen(
     cedula: String,
+    esAdmin: Boolean = false,
     onCreateFactura: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: FacturasViewModel = viewModel()
@@ -66,12 +67,22 @@ fun FacturasScreen(
 
     // Cargar facturas al iniciar
     LaunchedEffect(Unit) {
+        android.util.Log.d("FACTURAS_SCREEN", "Cargando facturas...")
+        android.util.Log.d("FACTURAS_SCREEN", "EsAdmin: $esAdmin, Cedula: $cedula")
         viewModel.cargarFacturas()
     }
 
-    // Filtrar facturas por cédula del cliente
-    val facturasDelUsuario = remember(facturas, cedula) {
-        facturas.filter { it.cedula == cedula }
+    // Filtrar facturas por cédula del cliente (solo si NO es admin)
+    val facturasDelUsuario = remember(facturas, cedula, esAdmin) {
+        android.util.Log.d("FACTURAS_SCREEN", "Total facturas cargadas: ${facturas.size}")
+        if (esAdmin) {
+            android.util.Log.d("FACTURAS_SCREEN", "Usuario es ADMIN - Mostrando TODAS las facturas")
+            facturas
+        } else {
+            val filtradas = facturas.filter { it.cedula == cedula }
+            android.util.Log.d("FACTURAS_SCREEN", "Usuario es CLIENTE - Filtrando por cedula $cedula: ${filtradas.size} facturas")
+            filtradas
+        }
     }
 
     Scaffold(
@@ -111,13 +122,13 @@ fun FacturasScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
-                            text = "Facturas",
+                            text = if (esAdmin) "Todas las Facturas" else "Mis Facturas",
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "${facturas.size} facturas registradas",
+                            text = "${facturasDelUsuario.size} facturas ${if (esAdmin) "registradas" else "tuyas"}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                         )

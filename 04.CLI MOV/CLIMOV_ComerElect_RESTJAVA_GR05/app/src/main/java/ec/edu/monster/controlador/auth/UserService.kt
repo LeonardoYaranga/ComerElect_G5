@@ -47,11 +47,11 @@ class UserService {
                 nombreCompleto = "Leonardo Cliente"
             ),
             Usuario(
-                username = "LEO2",
-                cedula = "1756891502",
-                password = "LEO29",
+                username = "JOE",
+                cedula = "0405060708",
+                password = "JOE9",
                 rol = Rol.CLIENTE,
-                nombreCompleto = "Leonardo 2 Yaranga"
+                nombreCompleto = "JOE BROWN"
             )
         )
     }
